@@ -188,7 +188,7 @@ public:
         ++size_;
     }
 
-    // Рекурсивно заполняет контейнер диапазоном значений
+    // Заполняет контейнер диапазоном значений
     template <typename IteratopType>
     void PushRange(const IteratopType& range_begin, const IteratopType& range_end) {
         if (range_begin == range_end) {

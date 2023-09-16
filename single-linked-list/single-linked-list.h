@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <string>
 
 template <typename Type>
@@ -68,21 +69,25 @@ class SingleLinkedList {
         }
 
         BasicIterator& operator++() noexcept {
+            assert(node_ != nullptr);
             node_ = node_->next_node;
             return *this;
         }
 
         BasicIterator operator++(int) noexcept {
-            const auto old_state(*this);
+            assert(node_ != nullptr);
+            auto old_state(*this);
             ++(*this);
             return old_state;
         }
 
         [[nodiscard]] reference operator*() const noexcept {
+            assert(node_ != nullptr);
             return node_->value;
         }
 
         [[nodiscard]] pointer operator->() const noexcept {
+            assert(node_ != nullptr);
             return &node_->value;
         }
 
@@ -189,10 +194,13 @@ public:
         if (range_begin == range_end) {
             return;
         }
-        IteratopType it = range_begin;
-        std::advance(it, 1);
-        PushRange(it, range_end);
-        PushFront(*range_begin);
+        Node* ptr = &head_;
+        for (auto it = range_begin; it != range_end; ++it) {
+            ptr->next_node = new Node(*it, nullptr);
+            ptr = ptr->next_node;
+            ++size_;
+        }
+        ptr = nullptr;
     }
 
 
@@ -200,6 +208,7 @@ public:
     // Возвращает итератор на вставленный элемент
     // Если при создании элемента будет выброшено исключение, список останется в прежнем состоянии
     Iterator InsertAfter(ConstIterator pos, const Type& value) {
+        assert(pos.node_ != nullptr);
         auto ptr = new Node(value, nullptr);
         ptr->next_node = pos.node_->next_node;
         pos.node_->next_node = ptr;
@@ -221,6 +230,7 @@ public:
     // Удаляет элемент, следующий за pos.
     // Возвращает итератор на элемент, следующий за удалённым
     Iterator EraseAfter(ConstIterator pos) noexcept {
+        assert(pos.node_ != nullptr);
         auto delete_ptr = pos.node_->next_node;
         pos.node_->next_node = delete_ptr->next_node;
         delete delete_ptr;
